@@ -9,13 +9,19 @@ use axum::{
     Router,
 };
 use http::Method;
+use log::error;
 use tower_http::cors::{Any, CorsLayer};
 
 #[tokio::main]
 async fn main() {
     env_logger::init();
 
-    let _db_url = std::env::var("DATABASE_URL").unwrap();
+    let _db_url = std::env::var("DATABASE_URL");
+
+    if _db_url.is_err() {
+        error!("please set DATABASE_URL env var!");
+        std::process::exit(1);
+    }
 
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
@@ -28,7 +34,7 @@ async fn main() {
         .route("/api", post(post_paste))
         .layer(cors);
 
-    axum::Server::bind(&"127.0.0.1:3000".parse().unwrap())
+    axum::Server::bind(&"127.0.0.1:8000".parse().unwrap())
         .serve(app.into_make_service())
         .await
         .unwrap();
