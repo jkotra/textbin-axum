@@ -8,6 +8,8 @@ DATABASE_URL="postgres://postgres:password@localhost:5432/textbin" sea-orm-cli m
 
 # Docker
 
+**NOTE:** `archlinux:base-devel` image is used to match local development environment.
+
 ```
 docker build -t textbin-axum:build .
 ```
