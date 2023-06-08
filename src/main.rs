@@ -1,12 +1,17 @@
 mod dblogic;
 mod entities;
 
+mod graphql;
+use async_graphql::{EmptyMutation, EmptySubscription, Schema};
+use graphql::latest::QueryRoot;
+use graphql::{graphiql, graphql_handler};
+
 mod controllers;
 use controllers::controllers::*;
 
 use axum::{
     routing::{get, post},
-    Router,
+    Extension, Router,
 };
 use http::Method;
 use log::error;
@@ -15,6 +20,8 @@ use tower_http::cors::{Any, CorsLayer};
 #[tokio::main]
 async fn main() {
     env_logger::init();
+
+    let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
 
     let _db_url = std::env::var("DATABASE_URL");
 
@@ -32,6 +39,8 @@ async fn main() {
         .route("/api/latest", get(get_latest))
         .route("/api/delete/:uuid", get(delete_paste))
         .route("/api", post(post_paste))
+        .route("/api/graphql", get(graphiql).post(graphql_handler))
+        .layer(Extension(schema))
         .layer(cors);
 
     axum::Server::bind(&"127.0.0.1:8000".parse().unwrap())
