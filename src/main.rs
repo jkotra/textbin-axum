@@ -2,8 +2,8 @@ mod dblogic;
 mod entities;
 
 mod graphql;
-use async_graphql::{EmptyMutation, EmptySubscription, Schema};
-use graphql::latest::QueryRoot;
+use async_graphql::{EmptySubscription, Schema};
+use graphql::controllers::{MutationRoot, QueryRoot};
 use graphql::{graphiql, graphql_handler};
 
 mod controllers;
@@ -21,7 +21,7 @@ use tower_http::cors::{Any, CorsLayer};
 async fn main() {
     env_logger::init();
 
-    let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
+    let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription).finish();
 
     let _db_url = std::env::var("DATABASE_URL");
 

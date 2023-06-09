@@ -1,4 +1,4 @@
-pub mod latest;
+pub mod controllers;
 
 use async_graphql::http::GraphiQLSource;
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
@@ -6,7 +6,7 @@ use axum::{
     extract::Extension,
     response::{self, IntoResponse},
 };
-use latest::LatestPastesSchema;
+use controllers::LatestPastesSchema;
 
 pub async fn graphql_handler(
     schema: Extension<LatestPastesSchema>,
