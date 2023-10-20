@@ -8,8 +8,6 @@ DATABASE_URL="postgres://postgres:password@localhost:5432/textbin" sea-orm-cli m
 
 # Docker
 
-**NOTE:** `archlinux:base-devel` image is used to match local development environment.
-
 ### Build
 
 ```
@@ -30,6 +28,8 @@ docker load < textbin.tar.gz
 
 ### Run!
 
+**Note**: Nake sure that a database named `textbin` exists (or change it to something else!) on your postgres DB.
+
 ```
-docker run --net host -e DATABASE_URL=postgres://postgres:password@127.0.0.1:5432/textbin -e GRC_SECRET=YOUR_KEY --restart unless-stopped -d textbin-axum:build
+docker run --net host -e DATABASE_URL=postgres://postgres:password@127.0.0.1:5432/textbin -e GRC_SECRET=YOUR_KEY --name textbin-axum --restart unless-stopped -d textbin-axum:build
 ```
