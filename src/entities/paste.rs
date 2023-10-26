@@ -3,8 +3,11 @@
 use async_graphql::Object;
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
+use utoipa::{IntoParams, ToSchema};
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize, Eq)]
+#[derive(
+    Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize, Eq, IntoParams, ToSchema,
+)]
 #[sea_orm(table_name = "paste")]
 pub struct Model {
     #[sea_orm(primary_key)]
@@ -17,6 +20,25 @@ pub struct Model {
     pub deletekey: String,
 }
 
+#[derive(IntoParams, ToSchema)]
+pub struct PasteRequestResponse {
+    pub id: i64,
+    pub date: i64,
+    pub uuid: String,
+    pub title: String,
+    pub text: String,
+}
+
+#[derive(IntoParams, ToSchema)]
+pub struct PasteCreationResponse {
+    pub id: i64,
+    pub date: i64,
+    pub uuid: String,
+    pub title: String,
+    pub text: String,
+    pub deletekey: String,
+}
+
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
 
@@ -24,7 +46,7 @@ impl ActiveModelBehavior for ActiveModel {}
 
 /* Request */
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, IntoParams, ToSchema)]
 pub struct PasteRequest {
     pub title: String,
     pub text: String,

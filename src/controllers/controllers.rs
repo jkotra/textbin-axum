@@ -12,14 +12,16 @@ use crate::entities::{
 use rand::distributions::Alphanumeric;
 use rand::{thread_rng, Rng};
 
+use utoipa::IntoParams;
+
 use log::{debug, error, info, warn};
 
-#[derive(Deserialize)]
+#[derive(Deserialize, IntoParams)]
 pub struct PasteDeleteQueryParams {
     key: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, IntoParams)]
 pub struct PasteGetQueryParams {
     uuid: String,
 }
@@ -42,6 +44,16 @@ fn remove_delete_key(model: &mut Model) {
     );
 }
 
+#[utoipa::path(
+    get,
+    path = "/api?uuid={uuid}",
+    params(
+        PasteGetQueryParams
+    ),
+    responses(
+        (status = 200, description = "", body = PasteRequestResponse)
+    )
+)]
 pub async fn get_paste(params: Query<PasteGetQueryParams>) -> impl IntoResponse {
     info!("requested uuid = {}", params.uuid.clone());
     let uid = match Uuid::parse_str(&params.uuid) {
@@ -80,6 +92,14 @@ pub async fn get_paste(params: Query<PasteGetQueryParams>) -> impl IntoResponse 
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/api",
+    request_body = PasteRequest,
+    responses(
+        (status = 201, description = "", body = PasteCreationResponse)
+    )
+)]
 pub async fn post_paste(Json(req): Json<PasteRequest>) -> impl IntoResponse {
     info!("received = {:?}", req);
 
@@ -131,6 +151,13 @@ pub async fn post_paste(Json(req): Json<PasteRequest>) -> impl IntoResponse {
     (StatusCode::CREATED, Json(inserted).into_response())
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/latest",
+    responses(
+        (status = 200, description = "", body = [PasteRequestResponse])
+    )
+)]
 pub async fn get_latest() -> impl IntoResponse {
     let db = get_db().await.unwrap();
 
@@ -150,6 +177,17 @@ pub async fn get_latest() -> impl IntoResponse {
     (StatusCode::OK, Json(results).into_response())
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/delete/{uuid}?key={key}",
+    params(
+        ("uuid" = String, Path, description = "UUID of the paste."),
+        PasteDeleteQueryParams
+    ),
+    responses(
+        (status = 200, description = "")
+    )
+)]
 pub async fn delete_paste(
     Path(paste_uuid): Path<String>,
     params: Query<PasteDeleteQueryParams>,
