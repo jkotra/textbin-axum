@@ -65,7 +65,7 @@ async fn main() {
         .route("/api/delete/:uuid", get(delete_paste))
         .route("/api", post(post_paste))
         .route("/api/graphql", get(graphiql).post(graphql_handler))
-        .merge(SwaggerUi::new("/swagger-ui").url("/api-doc/openapi.json", ApiDocs::openapi()))
+        .merge(SwaggerUi::new("/api/swagger-ui").url("/api-doc/openapi.json", ApiDocs::openapi()))
         .layer(Extension(schema))
         .layer(cors);
 
